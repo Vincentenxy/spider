@@ -8,23 +8,31 @@ from fake_useragent import UserAgent
 
 from mq.mq_kafka import MqKafka
 import infos.url_list as urls
-from spider_scripts.tonghuashun import TongHuaShun
-
 
 log = logging.getLogger('common_spider')
+
 # 公共爬虫类
+# TODO 增加动态页面爬虫
 class Spider(object):
+
+    comm_spider = None;
+
+    # 构造方法
     def __init__(self):
         self.kafka_client = MqKafka()
         self.kafka_client.create_producer()
 
+    # 返回实例
+    def get_comm_spider(self):
+        if self.comm_spider is None:
+            self.comm_spider = Spider()
+        return self.comm_spider
+
     # 生成请求头
     def get_headers(self):
-        ua = UserAgent()
-        headers = {
-            'User-Agent': ua.ie
+        return {
+            'User-Agent': UserAgent().ie
         }
-        return headers
 
     # 获取页面内容
     def get_page(self, url):
@@ -38,14 +46,8 @@ class Spider(object):
         return etree.HTML(html)
 
     # 将消息内容发送到kafka
-    def send_to_kafka(self, topic, content):
-        self.kafka_client.send_msg(topic=topic, content=content)
-
-    def run(self):
-        log.info("爬虫开始执行》》》》》》")
-        # for url in urls:
-
-        ths = TongHuaShun()
-        ths.url = 'https://www.10jqka.com.cn'
-        ths.run()
+    def send_to_kafka(self, *topic, content):
+        if content == "":
+            return
+        self.kafka_client.send_msg(topic='', content=content)
 

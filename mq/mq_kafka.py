@@ -3,7 +3,6 @@ import logging
 
 from kafka import KafkaProducer
 
-
 # kafak生产者类
 class MqKafka(object):
     def __init__(self):
