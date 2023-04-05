@@ -11,24 +11,19 @@ from spider_scripts.common_spider import Spider
 
 
 class TongHuaShun(object):
+
+    xpath_list = {
+        't.10jqka': '//div[@class="wdwrap post-text-main c444 ql-editor"]/p/text() | //div[@class="wdwrap post-text-main c444 ql-editor"]/p/*/text()',
+        'stock.10jqka': '//div[@class="main-text atc-content"]/p/text()',
+        'weixin.qq': '//span[@class="js_darkmode__0"]'
+    }
+
     def __init__(self):
         self.url = 'https://www.10jqka.com.cn'
         self.comm_spider = Spider().get_comm_spider()
     def run(self):
         page_html = self.comm_spider.get_page('https://www.10jqka.com.cn')
         self.top_news(page_html)
-
-    # 获取xpath表达式
-    def xpath_dispatch(self, url):
-        # 1、同花顺官方网站文章
-        if url.__contains__('10jqka.com'):
-            return  '//div[@class="main-text atc-content"]/p/text()'
-
-        # 2、微信小程序的文章
-        if url.__contains__('weixin.qq'):
-            # class ="js_darkmode__1"
-            return '//span[@class="js_darkmode__0"]'
-        return ''
 
     # def parse_page(self, html):
     #     # content_list = html.xpath('//ul[@class="content newhe"]/li/a/text()')
@@ -49,17 +44,17 @@ class TongHuaShun(object):
             return
         content_html = self.comm_spider.get_page(url)
         content = ''
-        content_strs= content_html.xpath(self.xpath_dispatch(url))
+        content_strs = content_html.xpath(self.xpath_list[self.comm_spider.find_url_key(url)])
         for cont in content_strs:
             content += cont
-        print("获取内容：" + content)
         return content
 
     # 主要新闻
     def top_news(self, html):
         news_list = html.xpath('//div[@class="fr tt_word yah"]//p/a/@href')
         for news in news_list:
-            article_content = self.parse_detail_page(news)
+            article_content = self.parse_detail_page(news).strip()
+            print(news + " 文章内容:\n" + article_content)
             self.comm_spider.send_to_kafka(content=article_content)
 
     # 投资机会

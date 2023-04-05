@@ -51,3 +51,9 @@ class Spider(object):
             return
         self.kafka_client.send_msg(topic='', content=content)
 
+    def find_url_key(self, url):
+        l_point = url.find('.')
+        if l_point == -1:
+            return ''
+        r_point = url.find('.', l_point+1)
+        return url[url.find('//')+2: r_point]
