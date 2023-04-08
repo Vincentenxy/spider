@@ -1,6 +1,8 @@
 # 爬取同花顺页面数据
 import json
 import logging
+import re
+import string
 
 from lxml import etree
 import requests
@@ -19,8 +21,9 @@ class Spider(object):
 
     # 构造方法
     def __init__(self):
-        self.kafka_client = MqKafka()
-        self.kafka_client.create_producer()
+        # self.kafka_client = MqKafka()
+        # self.kafka_client.create_producer()
+        return
 
     # 返回实例
     def get_comm_spider(self):
@@ -35,15 +38,29 @@ class Spider(object):
         }
 
     # 获取页面内容
-    def get_page(self, url):
+    def get_page(self, url, code_type):
+        # url格式校验
+        if re.match(r'^https?:/{2}\w.+$', url) == None:
+            logging.error("不符合标准:"+ url)
+            return None
         # 中文乱码问题
         # 1、使用content代替text获取内容，解决中文乱码问题
         t_url = self.url if url is None else url
-        html = requests.get(url=t_url, headers=self.get_headers()).content
-        # 2、可以手动至指定相应的编码格式,解决乱码问题
-        #html.encoding = html.apparent_encoding
+        html = ''
+        try:
+            if code_type == 'text':
+                html = requests.get(url=t_url, headers=self.get_headers()).text
+            else:
+                html = requests.get(url=t_url, headers=self.get_headers()).content
+        except Exception as e:
+            print('发生异常:', e)
+            return ''
+        return html
 
-        return etree.HTML(html)
+    # 返回处理过偶的数据
+    def get_etree_page(self, url):
+        ret_html = self.get_page(url, '')
+        return etree.HTML(ret_html)
 
     # 将消息内容发送到kafka
     def send_to_kafka(self, *topic, content):
@@ -57,3 +74,14 @@ class Spider(object):
             return ''
         r_point = url.find('.', l_point+1)
         return url[url.find('//')+2: r_point]
+
+    # 获取a标签的名称和href链接
+    def get_a_info(self, html, xpath_str):
+        content_ret_list = []
+        a_list = html.xpath(xpath_str)
+        for item_a in a_list:
+            content_ret_list.append({
+                'title': item_a.xpath('./text()')[0].strip(),
+                'url': item_a.xpath('./@href')[0]
+            })
+        return content_ret_list
