@@ -6,22 +6,21 @@ from spider_scripts.common_spider import Spider
 from spider_scripts.tonghuashun import TongHuaShun
 
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+log = logging.getLogger('main')
 
 def run():
     # 开始加载
-    logging.info("开始执行爬虫》》》》》》》》》》》》》》》》》》》》》》》》》》》》》》》》》》")
+    log.info("===========================开始执行爬虫=================================")
 
     # 同花顺
     ths = TongHuaShun()
     # ths.run()
+    log.info("===========================同花顺已经执行完成=================================")
 
     # 搜狐财经
     sohu = BusinessSohu()
     sohu.run()
-
-
+    log.info("===========================搜狐新闻已经执行完成=================================")
 
 
 # Press the green button in the gutter to run the script.

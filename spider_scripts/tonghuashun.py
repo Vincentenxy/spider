@@ -4,7 +4,7 @@ import logging
 from spider_scripts.common_spider import Spider
 
 
-class TongHuaShun(object):
+class TongHuaShun:
 
     xpath_list = {
         't.10jqka': '//div[@class="wdwrap post-text-main c444 ql-editor"]/p/text() | //div[@class="wdwrap post-text-main c444 ql-editor"]/p/*/text()',
@@ -30,7 +30,7 @@ class TongHuaShun(object):
         content_html = self.comm_spider.get_page(url)
         content = ''
         try:
-            content_strs = content_html.xpath(self.xpath_list[self.comm_spider.find_url_key(url)])
+            content_strs = content_html.xpath(TongHuaShun.xpath_list[self.comm_spider.find_url_key(url)])
         except Exception as e:
             logging.error(e)
             return ''
