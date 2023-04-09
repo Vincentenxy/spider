@@ -15,21 +15,19 @@ log = logging.getLogger('common_spider')
 
 # 公共爬虫类
 # TODO 增加动态页面爬虫
-class Spider(object):
+class Spider:
 
-    comm_spider = None;
+    comm_spider = None
 
     # 构造方法
     def __init__(self):
-        # self.kafka_client = MqKafka()
-        # self.kafka_client.create_producer()
-        return
+        self.kafka_client = MqKafka()
 
     # 返回实例
     def get_comm_spider(self):
-        if self.comm_spider is None:
-            self.comm_spider = Spider()
-        return self.comm_spider
+        if Spider.comm_spider is None:
+            Spider.comm_spider = Spider()
+        return Spider.comm_spider
 
     # 生成请求头
     def get_headers(self):
@@ -41,7 +39,7 @@ class Spider(object):
     def get_page(self, url, code_type):
         # url格式校验
         if re.match(r'^https?:/{2}\w.+$', url) == None:
-            logging.error("不符合标准:"+ url)
+            log.error("不符合标准:"+ url)
             return None
         # 中文乱码问题
         # 1、使用content代替text获取内容，解决中文乱码问题
@@ -63,10 +61,12 @@ class Spider(object):
         return etree.HTML(ret_html)
 
     # 将消息内容发送到kafka
-    def send_to_kafka(self, *topic, content):
+    def send_to_kafka(self, topic, content):
         if content == "":
+            log.error("数据为空错误")
             return
-        self.kafka_client.send_msg(topic='', content=content)
+        print("发送数据到kafka" + str(content))
+        self.kafka_client.send_msg(topic=topic, content=content)
 
     def find_url_key(self, url):
         l_point = url.find('.')

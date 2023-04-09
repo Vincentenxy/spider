@@ -79,7 +79,6 @@ class BusinessSohu:
         # print(html)
         self.request_for_data(html)
 
-
         return
         news_list = html.xpath('//div[@class="tpl-text-feed-item"]')
         print(news_list)
@@ -148,14 +147,21 @@ class BusinessSohu:
                 self.thread_pool.submit(self.add_item_into_list, thread_lock, data_list, item_d)
                 # data_list.append(self.create_item(item_d))
             idx += 1
+        for item_data in data_list:
+            self.comm_spider.send_to_kafka('', item_data)
         print("当前写入数据量" + str(len(data_list)))
 
     def add_item_into_list(self, thread_lock, item_list, item_d):
         item = self.create_item(item_d)
         thread_lock.acquire()
         item_list.append(item)
-        print("写入数据: " + str(item))
+        # print("写入数据: " + str(item))
         thread_lock.release()
+        # test code begin
+        # 数据发送kafka
+        # self.comm_spider.send_to_kafka('', item)
+        # print('发送kafka完毕:' + str(item))
+        # test code end
 
     def create_item(self, item):
         ret_item = {}
