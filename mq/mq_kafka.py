@@ -12,7 +12,7 @@ class MqKafka(object):
     def __init__(self, server='192.168.68.111:9092', topic='test'):
         self.server = server
         self.topic = topic
-        self.producer = self.create_producer()
+        self.create_producer()
 
     # 创建生产者
     def create_producer(self):
