@@ -8,11 +8,9 @@ class MultiThreads:
     max_workers = 8
     thread_instance = None
 
-    def __init__(self, t_max_worker):
+    def __init__(self, t_max_worker=8):
         MultiThreads.max_workers = t_max_worker
 
-    def __init__(self):
-        pass
 
     # 返回线程池实例
     def get_instance(self):

@@ -85,3 +85,11 @@ class Spider:
                 'url': item_a.xpath('./@href')[0]
             })
         return content_ret_list
+
+    # 获取文章格式
+    def get_article_item(self, title, url, content):
+        return {
+            title: title,
+            url: url,
+            content: content
+        }
