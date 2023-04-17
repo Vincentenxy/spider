@@ -3,6 +3,7 @@ import json
 import logging
 import re
 import string
+import time
 
 from lxml import etree
 import requests
@@ -89,7 +90,8 @@ class Spider:
     # 获取文章格式
     def get_article_item(self, title, url, content):
         return {
-            title: title,
-            url: url,
-            content: content
+            'title': title,
+            'url': url,
+            'create_at': time.strftime('%Y-%m-%d %H:%M:%S'),
+            'content': content
         }
